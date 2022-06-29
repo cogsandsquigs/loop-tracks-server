@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type chicagoTrainLineData struct {
+type ctaData struct {
 	CTATT struct {
 		Timestamp string `json:"tmst"`
 		ErrorCode string `json:"errCd"`
@@ -35,7 +35,7 @@ type chicagoTrainLineData struct {
 	}
 }
 
-func GetChicagoData(lines []string) (*TrainData, error) {
+func GetCTAData(lines []string) (*TrainData, error) {
 
 	apiKey := "00ff09063caa46748434d5fa321d048f"
 
@@ -70,7 +70,7 @@ func GetChicagoData(lines []string) (*TrainData, error) {
 		return nil, err
 	}
 
-	var data chicagoTrainLineData
+	var data ctaData
 
 	err = json.NewDecoder(res.Body).Decode(&data)
 
@@ -108,6 +108,12 @@ func GetChicagoData(lines []string) (*TrainData, error) {
 				return nil, err
 			}
 
+			heading, err := strconv.Atoi(train.Heading)
+
+			if err != nil {
+				return nil, err
+			}
+
 			if _, ok := ret.Lines[lines[i]]; !ok {
 				ret.Lines[lines[i]] = []Train{}
 			}
@@ -118,6 +124,7 @@ func GetChicagoData(lines []string) (*TrainData, error) {
 				Latitude:    lat,
 				Longitude:   lon,
 				Direction:   dir,
+				Heading:     heading,
 			})
 		}
 	}

@@ -24,19 +24,22 @@ func NewServer(backgroundUpdateDelay time.Duration) *Server {
 	server := &Server{
 		router: gin.Default(),
 		dataHooks: map[string]func() (*TrainData, error){
-			"chicago": func() (*TrainData, error) {
-				return GetChicagoData([]string{"pink", "red", "orange", "yellow", "green", "blue", "purple", "brown"})
+			"cta": func() (*TrainData, error) {
+				return GetCTAData([]string{"pink", "red", "orange", "yellow", "green", "blue", "purple", "brown"})
+			},
+			"mbta": func() (*TrainData, error) {
+				return GetMBTAData()
 			},
 		},
 		data:                  map[string]*TrainData{},
 		backgroundUpdateDelay: backgroundUpdateDelay,
 	}
 
-	server.router.GET("/:city", func(c *gin.Context) {
-		city := c.Param("city")
+	server.router.GET("/:system", func(c *gin.Context) {
+		system := c.Param("system")
 
-		if city == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "city parameter required"})
+		if system == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "transit system parameter required"})
 			return
 		}
 
@@ -47,7 +50,7 @@ func NewServer(backgroundUpdateDelay time.Duration) *Server {
 			return
 		}
 
-		data, err := server.GetData(city, strings.Split(lines, ","))
+		data, err := server.GetData(system, strings.Split(lines, ","))
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -77,32 +80,32 @@ func (s *Server) Run() {
 	s.router.Run()
 }
 
-func (s *Server) GetData(city string, lines []string) (*TrainData, error) {
+func (s *Server) GetData(system string, lines []string) (*TrainData, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
-	if _, ok := s.data[city]; !ok {
-		if _, ok := s.dataHooks[city]; !ok {
-			return nil, fmt.Errorf("city %s not found", city)
+	if _, ok := s.data[system]; !ok {
+		if _, ok := s.dataHooks[system]; !ok {
+			return nil, fmt.Errorf("train system %s not found", system)
 		}
 
-		data, err := s.dataHooks[city]()
+		data, err := s.dataHooks[system]()
 
 		if err != nil {
 			return nil, err
 		}
 
-		s.data[city] = data
+		s.data[system] = data
 	}
 
-	ret := *s.data[city]
+	ret := *s.data[system]
 	ret.Lines = map[string][]Train{}
 
 	for _, line := range lines {
-		if _, ok := s.data[city].Lines[line]; !ok {
+		if _, ok := s.data[system].Lines[line]; !ok {
 			return nil, fmt.Errorf("line %s not found", line)
 		}
-		ret.Lines[line] = s.data[city].Lines[line]
+		ret.Lines[line] = s.data[system].Lines[line]
 	}
 
 	return &ret, nil
@@ -112,14 +115,14 @@ func (s *Server) GetData(city string, lines []string) (*TrainData, error) {
 func (s *Server) UpdateData() error {
 	s.lock.Lock()
 	defer s.lock.Unlock()
-	for city, dataFunc := range s.dataHooks {
+	for system, dataFunc := range s.dataHooks {
 		data, err := dataFunc()
 
 		if err != nil {
 			return err
 		}
 
-		s.data[city] = data
+		s.data[system] = data
 	}
 	return nil
 }

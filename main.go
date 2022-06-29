@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	server := server.NewServer(15 * time.Second)
+	server := server.NewServer(30 * time.Second)
 	server.Run()
 }

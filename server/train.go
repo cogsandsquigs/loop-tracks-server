@@ -14,4 +14,5 @@ type Train struct {
 	Latitude    float64 `json:"latitude"`     // latitude of the train
 	Longitude   float64 `json:"longitude"`    // longitude of the train
 	Direction   int     `json:"direction"`    // direction of train, 1 = north, 5 = south
+	Heading     int     `json:"heading"`      // heading of train, 0 = north, 90 = east, 180 = south, 270 = west
 }
