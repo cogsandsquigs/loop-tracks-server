@@ -12,23 +12,23 @@ import (
 )
 
 type Server struct {
-	router                *gin.Engine                                   // router for the server
-	lock                  sync.Mutex                                    // lock for the data
-	data                  map[string]map[string][]Train                 // train data, updated in background
-	dataHooks             map[string]func() (map[string][]Train, error) // train data update functions
-	backgroundUpdateDelay time.Duration                                 // time to wait before updating data in background per every update cycle
+	router                *gin.Engine                           // router for the server
+	lock                  sync.Mutex                            // lock for the data
+	data                  map[string]*TrainData                 // train data, updated in background
+	dataHooks             map[string]func() (*TrainData, error) // train data update functions
+	backgroundUpdateDelay time.Duration                         // time to wait before updating data in background per every update cycle
 
 }
 
 func NewServer(backgroundUpdateDelay time.Duration) *Server {
 	server := &Server{
 		router: gin.Default(),
-		dataHooks: map[string]func() (map[string][]Train, error){
-			"chicago": func() (map[string][]Train, error) {
-				return GetChicagoData([]string{"pink"})
+		dataHooks: map[string]func() (*TrainData, error){
+			"chicago": func() (*TrainData, error) {
+				return GetChicagoData([]string{"pink", "red", "orange", "yellow", "green", "blue", "purple", "brown"})
 			},
 		},
-		data:                  map[string]map[string][]Train{},
+		data:                  map[string]*TrainData{},
 		backgroundUpdateDelay: backgroundUpdateDelay,
 	}
 
@@ -48,8 +48,6 @@ func NewServer(backgroundUpdateDelay time.Duration) *Server {
 		}
 
 		data, err := server.GetData(city, strings.Split(lines, ","))
-
-		fmt.Println(data)
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -79,7 +77,7 @@ func (s *Server) Run() {
 	s.router.Run()
 }
 
-func (s *Server) GetData(city string, lines []string) (map[string][]Train, error) {
+func (s *Server) GetData(city string, lines []string) (*TrainData, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -97,16 +95,17 @@ func (s *Server) GetData(city string, lines []string) (map[string][]Train, error
 		s.data[city] = data
 	}
 
-	ret := map[string][]Train{}
+	ret := *s.data[city]
+	ret.Lines = map[string][]Train{}
 
 	for _, line := range lines {
-		if _, ok := s.data[city][line]; !ok {
+		if _, ok := s.data[city].Lines[line]; !ok {
 			return nil, fmt.Errorf("line %s not found", line)
 		}
-		ret[line] = s.data[city][line]
+		ret.Lines[line] = s.data[city].Lines[line]
 	}
 
-	return ret, nil
+	return &ret, nil
 }
 
 // updates the data for all the cities

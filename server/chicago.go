@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type chicagoTrainLineData struct {
@@ -34,7 +35,7 @@ type chicagoTrainLineData struct {
 	}
 }
 
-func GetChicagoData(lines []string) (map[string][]Train, error) {
+func GetChicagoData(lines []string) (*TrainData, error) {
 
 	apiKey := "00ff09063caa46748434d5fa321d048f"
 
@@ -77,7 +78,17 @@ func GetChicagoData(lines []string) (map[string][]Train, error) {
 		return nil, err
 	}
 
-	ret := make(map[string][]Train)
+	t, err := time.Parse(time.RFC3339, data.CTATT.Timestamp+"-05:00")
+
+	if err != nil {
+		return nil, err
+	}
+
+	ret := &TrainData{
+		Timestamp: t.Unix(),
+		City:      "chicago",
+		Lines:     map[string][]Train{},
+	}
 
 	for i, route := range data.CTATT.Route {
 		for _, train := range route.Train {
@@ -97,11 +108,11 @@ func GetChicagoData(lines []string) (map[string][]Train, error) {
 				return nil, err
 			}
 
-			if _, ok := ret[lines[i]]; !ok {
-				ret[lines[i]] = []Train{}
+			if _, ok := ret.Lines[lines[i]]; !ok {
+				ret.Lines[lines[i]] = []Train{}
 			}
 
-			ret[lines[i]] = append(ret[lines[i]], Train{
+			ret.Lines[lines[i]] = append(ret.Lines[lines[i]], Train{
 				LineName:    lines[i],
 				NextStation: train.NextStationName,
 				Latitude:    lat,

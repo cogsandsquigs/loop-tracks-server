@@ -1,5 +1,13 @@
 package server
 
+type TrainData struct {
+	Timestamp int64      `json:"timestamp"`   // unix timestamp of when data was last updated
+	City      string     `json:"city"`        // city name of where the data comes from
+	Lines     TrainLines `json:"train_lines"` // the train lines and their trains
+}
+
+type TrainLines map[string][]Train // a collection of train lines, each containing some trains
+
 type Train struct {
 	LineName    string  `json:"line_name"`    // name of the rail line
 	NextStation string  `json:"next_station"` // name of the next station
