@@ -34,7 +34,9 @@ type chicagoTrainLineData struct {
 	}
 }
 
-func GetChicagoData(apiKey string, lines []string) (map[string][]Train, error) {
+func GetChicagoData(lines []string) (map[string][]Train, error) {
+
+	apiKey := "00ff09063caa46748434d5fa321d048f"
 
 	requestLines := ""
 	for _, line := range lines {
@@ -100,10 +102,11 @@ func GetChicagoData(apiKey string, lines []string) (map[string][]Train, error) {
 			}
 
 			ret[lines[i]] = append(ret[lines[i]], Train{
-				Latitude:  lat,
-				Longitude: lon,
-				RailName:  lines[i],
-				Direction: dir,
+				LineName:    lines[i],
+				NextStation: train.NextStationName,
+				Latitude:    lat,
+				Longitude:   lon,
+				Direction:   dir,
 			})
 		}
 	}
