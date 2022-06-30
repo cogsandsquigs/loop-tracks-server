@@ -71,6 +71,22 @@ export class CTA implements Source {
                                         );
 
                                         return [lines[index], []];
+                                    } else if (
+                                        route.train.constructor.name != "Array"
+                                    ) {
+                                        return [
+                                            lines[index],
+                                            [
+                                                new Train(
+                                                    lines[index],
+                                                    route.train.nextStaNm,
+                                                    Number(route.train.trDr),
+                                                    Number(route.train.heading),
+                                                    Number(route.train.lat),
+                                                    Number(route.train.lon)
+                                                ),
+                                            ],
+                                        ];
                                     }
 
                                     return [

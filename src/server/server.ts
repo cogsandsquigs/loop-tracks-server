@@ -4,6 +4,7 @@ import { Logger } from "../logger";
 import { CTA } from "./cta";
 import { Source } from "./source";
 import { TrainData } from "./train";
+import { MBTA } from "./mbta";
 
 export class Server {
     private router: Router;
@@ -15,7 +16,7 @@ export class Server {
         this.router = Router();
         this.scheduler = new ToadScheduler();
         this.cache = new Map<string, TrainData>();
-        this.sources = [new CTA()];
+        this.sources = [new CTA(), new MBTA()];
 
         const task = new AsyncTask(
             "update train data cache in background",

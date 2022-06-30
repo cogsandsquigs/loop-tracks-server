@@ -14,7 +14,7 @@ export class TrainData {
 }
 
 export class Train {
-    line_name: string;
+    line: string;
     next_stop: string;
     direction: number;
     heading: number;
@@ -22,14 +22,14 @@ export class Train {
     longitude: number;
 
     constructor(
-        line_name: string,
+        line: string,
         next_stop: string,
         direction: number,
         heading: number,
         latitude: number,
         longitude: number
     ) {
-        this.line_name = line_name;
+        this.line = line;
         this.next_stop = next_stop;
         this.direction = direction;
         this.heading = heading;
