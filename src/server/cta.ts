@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Logger } from "../logger";
 import { Source } from "./source";
-import { Train, TrainData } from "./train";
+import { Line, Train, TrainData } from "./train";
 
 export class CTA implements Source {
     private apiKey = "00ff09063caa46748434d5fa321d048f";
@@ -76,7 +76,7 @@ export class CTA implements Source {
                                     ) {
                                         return [
                                             lines[index],
-                                            [
+                                            new Line(lines[index], [
                                                 new Train(
                                                     lines[index],
                                                     route.train.nextStaNm,
@@ -85,22 +85,25 @@ export class CTA implements Source {
                                                     Number(route.train.lat),
                                                     Number(route.train.lon)
                                                 ),
-                                            ],
+                                            ]),
                                         ];
                                     }
 
                                     return [
                                         lines[index],
-                                        route.train.map((train: any) => {
-                                            return new Train(
-                                                lines[index],
-                                                train.nextStaNm,
-                                                Number(train.trDr),
-                                                Number(train.heading),
-                                                Number(train.lat),
-                                                Number(train.lon)
-                                            );
-                                        }),
+                                        new Line(
+                                            lines[index],
+                                            route.train.map((train: any) => {
+                                                return new Train(
+                                                    lines[index],
+                                                    train.nextStaNm,
+                                                    Number(train.trDr),
+                                                    Number(train.heading),
+                                                    Number(train.lat),
+                                                    Number(train.lon)
+                                                );
+                                            })
+                                        ),
                                     ];
                                 }
                             )

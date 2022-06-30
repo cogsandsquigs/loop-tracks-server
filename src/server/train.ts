@@ -5,11 +5,22 @@ export class TrainData {
     constructor(
         timestamp: number,
         system: string,
-        train_lines: Map<string, Train>
+        train_lines: Map<string, Line>
     ) {
         this.timestamp = timestamp;
         this.system = system;
         this.train_lines = Object.fromEntries(train_lines);
+    }
+}
+
+export class Line {
+    name: string;
+    count: number;
+    trains: Train[];
+    constructor(name: string, trains: Train[]) {
+        this.name = name;
+        this.count = trains.length;
+        this.trains = trains;
     }
 }
 

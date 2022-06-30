@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Source } from "./source";
-import { Train, TrainData } from "./train";
+import { Line, Train, TrainData } from "./train";
 
 export class MBTA implements Source {
     public name: string = "mbta";
@@ -48,20 +48,21 @@ export class MBTA implements Source {
                             // converts the train data to a Map to prepare for insertion into TrainData object
                             .reduce(
                                 (
-                                    acc: Map<string, Train[]>,
+                                    acc: Map<string, Line>,
                                     train: Train
-                                ): Map<string, Train[]> => {
+                                ): Map<string, Line> => {
                                     let line = acc.get(train.line);
                                     if (line !== undefined) {
-                                        line.push(train);
+                                        line.trains.push(train);
+                                        line.count++;
                                         acc.set(train.line, line);
                                     } else {
-                                        line = [train];
+                                        line = new Line(train.line, [train]);
                                         acc.set(train.line, line);
                                     }
                                     return acc;
                                 },
-                                new Map<string, Train[]>()
+                                new Map<string, Line>()
                             )
                     )
                 );
