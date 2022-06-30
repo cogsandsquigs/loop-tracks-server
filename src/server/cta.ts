@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Logger } from "../logger";
 import { Source } from "./source";
 import { Train, TrainData } from "./train";
 
@@ -64,7 +65,14 @@ export class CTA implements Source {
                         new Map(
                             data.ctatt.route.map(
                                 (route: any, index: number) => {
-                                    console.log(route);
+                                    if (route.train == undefined) {
+                                        Logger.warn(
+                                            `No train data found for ${lines[index]} line`
+                                        );
+
+                                        return [lines[index], []];
+                                    }
+
                                     return [
                                         lines[index],
                                         route.train.map((train: any) => {
