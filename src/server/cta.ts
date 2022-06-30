@@ -63,8 +63,9 @@ export class CTA implements Source {
                         data.ctatt.tmst,
                         "cta",
                         new Map(
-                            data.ctatt.route.map(
-                                (route: any, index: number) => {
+                            data.ctatt.route
+                                // converts the train data to a list of [<line name>, <Train object>]
+                                .map((route: any, index: number) => {
                                     if (route.train == undefined) {
                                         Logger.warn(
                                             `No train data found for ${lines[index]} line`
@@ -105,8 +106,7 @@ export class CTA implements Source {
                                             })
                                         ),
                                     ];
-                                }
-                            )
+                                })
                         )
                     )
                 );
