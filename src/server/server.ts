@@ -46,13 +46,15 @@ export class Server {
             const system = req.params.system.toLowerCase();
             const lines = String(req.query.lines).split(",");
 
-            if (lines[0] == "undefined") {
+            if (lines[0] === "undefined") {
                 res.status(400).send("No lines specified");
                 return;
             }
 
             try {
-                let data = this.cache.get(system);
+                // cloning the cached data to prevent side effects on/mutations of the cache
+                let data = structuredClone(this.cache.get(system));
+
                 if (data === undefined) {
                     res.status(400).send(
                         "Unknown transportation/railway system"

@@ -10,6 +10,7 @@ export class MBTA implements Source {
                 const response = await axios.get(
                     "https://api-v3.mbta.com/vehicles"
                 );
+
                 resolve(
                     new TrainData(
                         Date.now(),
@@ -32,8 +33,11 @@ export class MBTA implements Source {
                                             .split("-")[0]
                                             .toLowerCase(),
                                         String(
-                                            train.attributes
-                                                .current_stop_sequence
+                                            train.relationships.stop.data !==
+                                                null
+                                                ? train.relationships.stop.data
+                                                      .id
+                                                : "unknown"
                                         ),
                                         4 *
                                             Number(
