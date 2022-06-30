@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/recommended/tsconfig.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "outDir": "build",
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["src/*"]
+    },
+    "target": "es5"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
