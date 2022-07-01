@@ -47,22 +47,22 @@ export class MBTA implements Source {
                             ])
                             // converts the train data to a Map to prepare for insertion into TrainData object
                             .reduce(
-                                (
-                                    acc: Map<string, Line>,
-                                    l: [string, Train]
-                                ): Map<string, Line> => {
-                                    let line = acc.get(l[0]);
-                                    if (line !== undefined) {
-                                        line.trains.push(l[1]);
-                                        line.count++;
-                                        acc.set(l[0], line);
+                                (acc: Line[], l: [string, Train]): Line[] => {
+                                    if (
+                                        acc.find(
+                                            (line: Line) => line.name == l[0]
+                                        )
+                                    ) {
+                                        acc.find(
+                                            (line: Line) => line.name == l[0]
+                                        )?.trains.push(l[1]);
                                     } else {
-                                        line = new Line(l[0], [l[1]]);
-                                        acc.set(l[0], line);
+                                        acc.push(new Line(l[0], [l[1]]));
                                     }
+
                                     return acc;
                                 },
-                                new Map<string, Line>()
+                                []
                             )
                     )
                 );

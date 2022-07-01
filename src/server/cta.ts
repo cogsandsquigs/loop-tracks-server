@@ -31,50 +31,43 @@ export class CTA implements Source {
                     new TrainData(
                         data.ctatt.tmst,
                         "cta",
-                        new Map(
-                            data.ctatt.route
-                                // converts the train data to a list of [<line name>, <Train object>]
-                                .map((route: any, index: number) => {
-                                    if (route.train == undefined) {
-                                        Logger.warn(
-                                            `No train data found for ${lines[index]} line`
-                                        );
 
-                                        return [lines[index], []];
-                                    } else if (
-                                        route.train.constructor.name != "Array"
-                                    ) {
-                                        return [
-                                            lines[index],
-                                            new Line(lines[index], [
-                                                new Train(
-                                                    route.train.nextStaNm,
-                                                    Number(route.train.trDr),
-                                                    Number(route.train.heading),
-                                                    Number(route.train.lat),
-                                                    Number(route.train.lon)
-                                                ),
-                                            ]),
-                                        ];
-                                    }
+                        data.ctatt.route
+                            // converts the train data to a list of Line objects
+                            .map((route: any, index: number) => {
+                                if (route.train == undefined) {
+                                    Logger.warn(
+                                        `No train data found for ${lines[index]} line`
+                                    );
 
-                                    return [
-                                        lines[index],
-                                        new Line(
-                                            lines[index],
-                                            route.train.map((train: any) => {
-                                                return new Train(
-                                                    train.nextStaNm,
-                                                    Number(train.trDr),
-                                                    Number(train.heading),
-                                                    Number(train.lat),
-                                                    Number(train.lon)
-                                                );
-                                            })
+                                    return [lines[index], []];
+                                } else if (
+                                    route.train.constructor.name != "Array"
+                                ) {
+                                    return new Line(lines[index], [
+                                        new Train(
+                                            route.train.nextStaNm,
+                                            Number(route.train.trDr),
+                                            Number(route.train.heading),
+                                            Number(route.train.lat),
+                                            Number(route.train.lon)
                                         ),
-                                    ];
-                                })
-                        )
+                                    ]);
+                                }
+
+                                return new Line(
+                                    lines[index],
+                                    route.train.map((train: any) => {
+                                        return new Train(
+                                            train.nextStaNm,
+                                            Number(train.trDr),
+                                            Number(train.heading),
+                                            Number(train.lat),
+                                            Number(train.lon)
+                                        );
+                                    })
+                                );
+                            })
                     )
                 );
             } catch (error) {

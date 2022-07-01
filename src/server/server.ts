@@ -84,37 +84,29 @@ export class Server {
                         error: "Unknown transportation/railway system",
                     });
                 } else {
-                    // checks if requested rail line is actually a line that exists in the data
-                    if (
-                        lines.every((line) => {
-                            if (
-                                !Object.keys(data?.train_lines || {}).includes(
-                                    line
-                                )
-                            ) {
-                                res.status(400).send({
-                                    error: `Unknown rail line ${line}`,
-                                });
-                                return false;
-                            } else {
-                                return true;
-                            }
-                        })
-                    ) {
-                        // filters out all the lines that are not in the list of lines requested.
-                        // converts the train_lines object to a map, filters the map, and converts it back to an object.
-                        data.train_lines = Object.fromEntries(
-                            new Map<string, any>(
-                                [...Object.entries(data.train_lines)].filter(
-                                    (line) => lines.includes(line[0])
-                                )
-                            )
-                        );
-                        res.status(200).send(data);
+                    // returns an error if any line requested does not exist for the given system
+                    for (const line of lines) {
+                        if (
+                            data.lines.find((l: any) => l.name == line) ===
+                            undefined
+                        ) {
+                            res.status(400).send({
+                                error: `Line ${line} does not exist for ${system}`,
+                            });
+                            return;
+                        }
                     }
+
+                    // filters out all the lines that are not in the list of lines requested.
+                    // converts the train_lines object to a map, filters the map, and converts it back to an object.
+                    data.lines = data.lines.filter((line) =>
+                        lines.includes(line.name)
+                    );
+                    res.status(200).send(data);
                 }
             } catch (err) {
-                res.status(500).send({ error: err });
+                console.log(err);
+                res.status(500).send({ error: String(err) });
             }
         });
     }
