@@ -3,7 +3,7 @@ import express, { Router } from "express";
 import { Logger } from "../logger";
 import { CTA } from "./cta";
 import { Source, SourceConstructor } from "./source";
-import { TrainData } from "./train";
+import { Line, TrainData } from "./train";
 import { MBTA } from "./mbta";
 
 export class Server {
@@ -87,7 +87,7 @@ export class Server {
                     // returns an error if any line requested does not exist for the given system
                     for (const line of lines) {
                         if (
-                            data.lines.find((l: any) => l.name == line) ===
+                            data.lines.find((l: Line) => l.name == line) ===
                             undefined
                         ) {
                             res.status(400).send({
