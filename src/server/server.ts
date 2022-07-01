@@ -25,11 +25,12 @@ export class Server {
             const apiKey = Object.entries(apiKeys).find(
                 ([key]) => key === sourceConstructor.name
             );
+
             if (apiKey && apiKey[1] !== "") {
                 this.sources.push(new sourceConstructor(apiKey[1]));
             } else {
                 Logger.warn(
-                    `No API key found for ${sourceConstructor.name}. Is this intentional, or do you mean to add one?`
+                    `No API key found for the ${sourceConstructor.name} rail system. Is this intentional, or do you mean to add one?`
                 );
                 this.sources.push(new sourceConstructor(""));
             }
@@ -68,8 +69,8 @@ export class Server {
             const system = req.params.system.toLowerCase();
             const lines = String(req.query.lines).split(",");
 
-            if (lines[0] === "undefined") {
-                res.status(400).send("No lines specified");
+            if (lines[0] === undefined || lines[0] === "") {
+                res.status(400).send({ error: "No lines specified" });
                 return;
             }
 
@@ -78,20 +79,38 @@ export class Server {
                 let data = structuredClone(this.cache.get(system));
 
                 if (data === undefined) {
-                    res.status(400).send(
-                        "Unknown transportation/railway system"
-                    );
+                    res.status(400).send({
+                        error: "Unknown transportation/railway system",
+                    });
                 } else {
-                    // filters out all the lines that are not in the list of lines requested.
-                    // converts the train_lines object to a map, filters the map, and converts it back to an object.
-                    data.train_lines = Object.fromEntries(
-                        new Map<string, any>(
-                            [...Object.entries(data.train_lines)].filter(
-                                (line) => lines.includes(line[0])
+                    // checks if requested rail line is actually a line that exists in the data
+                    if (
+                        lines.every((line) => {
+                            if (
+                                !Object.keys(data?.train_lines || {}).includes(
+                                    line
+                                )
+                            ) {
+                                res.status(400).send({
+                                    error: `Unknown rail line ${line}`,
+                                });
+                                return false;
+                            } else {
+                                return true;
+                            }
+                        })
+                    ) {
+                        // filters out all the lines that are not in the list of lines requested.
+                        // converts the train_lines object to a map, filters the map, and converts it back to an object.
+                        data.train_lines = Object.fromEntries(
+                            new Map<string, any>(
+                                [...Object.entries(data.train_lines)].filter(
+                                    (line) => lines.includes(line[0])
+                                )
                             )
-                        )
-                    );
-                    res.status(200).send(data);
+                        );
+                        res.status(200).send(data);
+                    }
                 }
             } catch (err) {
                 res.status(500).send({ error: err });

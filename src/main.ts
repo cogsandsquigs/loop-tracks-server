@@ -6,7 +6,7 @@ import { Logger } from "./logger";
 try {
     let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
 
-    const server = new Server(15, config.apiKeys);
+    const server = new Server(config.cacheUpdateDelay, config.apiKeys);
 
     let port = process.env.PORT || 3000;
 
