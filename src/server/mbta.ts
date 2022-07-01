@@ -17,7 +17,11 @@ export class MBTA implements Source {
 
                 resolve(
                     new TrainData(
-                        Date.now(),
+                        Math.round(
+                            new Date(
+                                response.data.data[0].attributes.updated_at // this isn't the actual value of when all of the trains were updated on the MBTA servers, but it's close enough that it's fine
+                            ).getTime() / 1000
+                        ),
                         "mbta",
                         response.data.data
                             // filters out non-train vehicles
