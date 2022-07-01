@@ -61,7 +61,7 @@ export class CTA implements Source {
 
                 resolve(
                     new TrainData(
-                        data.ctatt.tmst,
+                        Math.round(new Date(data.ctatt.tmst).getTime() / 1000),
                         "cta",
 
                         data.ctatt.route
