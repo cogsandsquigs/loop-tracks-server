@@ -13,43 +13,10 @@ export class CTA implements Source {
     }
 
     public async getData(): Promise<TrainData> {
-        const lines = [
-            "pink",
-            "red",
-            "orange",
-            "yellow",
-            "green",
-            "blue",
-            "purple",
-            "brown",
-        ];
+        const lines = ["pink", "red", "org", "y", "g", "blue", "p", "brn"];
 
         // converts the lines to a comma separated string with values that reflect the CTA API naming of lines
-        let requestLines = lines
-            .map((line) => {
-                switch (line) {
-                    case "pink":
-                        return "pink,";
-                    case "red":
-                        return "red,";
-                    case "orange":
-                        return "org,";
-                    case "yellow":
-                        return "y,";
-                    case "green":
-                        return "g,";
-                    case "blue":
-                        return "blue,";
-                    case "purple":
-                        return "p,";
-                    case "brown":
-                        return "brn,";
-                    default:
-                        throw `Unknown line: ${line}`;
-                }
-            })
-            .join("");
-        requestLines = requestLines.substring(0, requestLines.length - 1);
+        let requestLines = lines.join(",");
 
         // fetches data from the CTA API
         return new Promise(async (resolve, reject) => {
@@ -59,6 +26,8 @@ export class CTA implements Source {
                 );
 
                 let data = response.data;
+
+                console.log(data);
 
                 resolve(
                     new TrainData(
