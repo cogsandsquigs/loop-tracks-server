@@ -38,6 +38,7 @@ export class MBTA implements Source {
                                             ? train.relationships.stop.data.id
                                             : "unknown"
                                     ),
+                                    "unknown",
                                     4 * Number(train.attributes.direction_id) +
                                         1,
                                     Number(train.attributes.bearing),

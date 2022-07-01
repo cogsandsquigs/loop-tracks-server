@@ -22,6 +22,7 @@ export class Line {
 
 export class Train {
     next_stop: string;
+    destination: string;
     direction: number;
     heading: number;
     latitude: number;
@@ -29,12 +30,14 @@ export class Train {
 
     constructor(
         next_stop: string,
+        destination: string,
         direction: number,
         heading: number,
         latitude: number,
         longitude: number
     ) {
         this.next_stop = next_stop;
+        this.destination = destination;
         this.direction = direction;
         this.heading = heading;
         this.latitude = latitude;
