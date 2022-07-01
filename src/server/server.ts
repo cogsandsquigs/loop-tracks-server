@@ -23,7 +23,8 @@ export class Server {
         // assings sources to the server for updating data cache
         for (const sourceConstructor of this.sourceConstructors) {
             const apiKey = Object.entries(apiKeys).find(
-                ([key]) => key === sourceConstructor.name
+                ([key]) =>
+                    key.toLowerCase() == sourceConstructor.name.toLowerCase()
             );
 
             if (apiKey && apiKey[1] !== "") {
