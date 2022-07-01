@@ -48,7 +48,6 @@ export class CTA implements Source {
                                             lines[index],
                                             new Line(lines[index], [
                                                 new Train(
-                                                    lines[index],
                                                     route.train.nextStaNm,
                                                     Number(route.train.trDr),
                                                     Number(route.train.heading),
@@ -65,7 +64,6 @@ export class CTA implements Source {
                                             lines[index],
                                             route.train.map((train: any) => {
                                                 return new Train(
-                                                    lines[index],
                                                     train.nextStaNm,
                                                     Number(train.trDr),
                                                     Number(train.heading),
