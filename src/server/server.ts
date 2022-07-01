@@ -76,10 +76,9 @@ export class Server {
             }
 
             try {
-                // cloning the cached data to prevent side effects on/mutations of the cache
-                let data = structuredClone(this.cache.get(system));
+                let c = this.cache.get(system);
 
-                if (data === undefined) {
+                if (c === undefined) {
                     res.status(400).send({
                         error: "Unknown transportation/railway system",
                     });
@@ -87,7 +86,7 @@ export class Server {
                     // returns an error if any line requested does not exist for the given system
                     for (const line of lines) {
                         if (
-                            data.lines.find((l: Line) => l.name == line) ===
+                            c.lines.find((l: Line) => l.name == line) ===
                             undefined
                         ) {
                             res.status(400).send({
@@ -97,11 +96,13 @@ export class Server {
                         }
                     }
 
-                    // filters out all the lines that are not in the list of lines requested.
-                    // converts the train_lines object to a map, filters the map, and converts it back to an object.
-                    data.lines = data.lines.filter((line: Line) =>
-                        lines.includes(line.name)
+                    // hacky way to clone data w/o structuredClone
+                    let data = new TrainData(
+                        c.timestamp,
+                        c.system,
+                        c.lines.filter((l: Line) => lines.includes(l.name))
                     );
+
                     res.status(200).send(data);
                 }
             } catch (err) {

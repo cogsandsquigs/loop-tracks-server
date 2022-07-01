@@ -64,6 +64,7 @@ var toad_scheduler_1 = require("toad-scheduler");
 var express_1 = __importStar(require("express"));
 var logger_1 = require("../logger");
 var cta_1 = require("./cta");
+var train_1 = require("./train");
 var mbta_1 = require("./mbta");
 var Server = /** @class */ (function () {
     function Server(backgroundCacheUpdateSeconds, apiKeys) {
@@ -126,7 +127,7 @@ var Server = /** @class */ (function () {
         var job = new toad_scheduler_1.SimpleIntervalJob({ seconds: backgroundCacheUpdateSeconds, runImmediately: true }, task);
         this.scheduler.addSimpleIntervalJob(job);
         this.router.get("/:system", function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-            var system, lines, data, _loop_2, _i, lines_1, line, state_1;
+            var system, lines, c, _loop_2, _i, lines_1, line, state_1, data;
             return __generator(this, function (_a) {
                 system = req.params.system.toLowerCase();
                 lines = String(req.query.lines).split(",");
@@ -135,15 +136,15 @@ var Server = /** @class */ (function () {
                     return [2 /*return*/];
                 }
                 try {
-                    data = structuredClone(this.cache.get(system));
-                    if (data === undefined) {
+                    c = this.cache.get(system);
+                    if (c === undefined) {
                         res.status(400).send({
                             error: "Unknown transportation/railway system",
                         });
                     }
                     else {
                         _loop_2 = function (line) {
-                            if (data.lines.find(function (l) { return l.name == line; }) ===
+                            if (c.lines.find(function (l) { return l.name == line; }) ===
                                 undefined) {
                                 res.status(400).send({
                                     error: "Line ".concat(line, " does not exist for ").concat(system),
@@ -158,11 +159,7 @@ var Server = /** @class */ (function () {
                             if (typeof state_1 === "object")
                                 return [2 /*return*/, state_1.value];
                         }
-                        // filters out all the lines that are not in the list of lines requested.
-                        // converts the train_lines object to a map, filters the map, and converts it back to an object.
-                        data.lines = data.lines.filter(function (line) {
-                            return lines.includes(line.name);
-                        });
+                        data = new train_1.TrainData(c.timestamp, c.system, c.lines.filter(function (l) { return lines.includes(l.name); }));
                         res.status(200).send(data);
                     }
                 }
