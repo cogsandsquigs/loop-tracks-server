@@ -1,21 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Logger = void 0;
-class Logger {
-    static debug(message) {
-        this.log(`[DEBUG] ${message}`);
+var Logger = /** @class */ (function () {
+    function Logger() {
     }
-    static info(message) {
-        this.log(`[INFO] ${message}`);
-    }
-    static warn(message) {
-        this.log(`[WARN] ${message}`);
-    }
-    static error(message) {
-        this.log(`[ERROR] ${message}`);
-    }
-    static log(message) {
-        console.log(`${new Date().toISOString()} ${message}`);
-    }
-}
+    Logger.debug = function (message) {
+        this.log("[DEBUG] ".concat(message));
+    };
+    Logger.info = function (message) {
+        this.log("[INFO] ".concat(message));
+    };
+    Logger.warn = function (message) {
+        this.log("[WARN] ".concat(message));
+    };
+    Logger.error = function (message) {
+        this.log("[ERROR] ".concat(message));
+    };
+    Logger.log = function (message) {
+        console.log("".concat(new Date().toISOString(), " ").concat(message));
+    };
+    return Logger;
+}());
 exports.Logger = Logger;
