@@ -4,6 +4,10 @@ import { Line, Train, TrainData } from "./train";
 
 export class MBTA implements Source {
     public name: string = "mbta";
+
+    // doesn't require an api key, so this can be empty
+    constructor(apiKey: string) {}
+
     public getData(): Promise<TrainData> {
         return new Promise(async (resolve, reject) => {
             try {

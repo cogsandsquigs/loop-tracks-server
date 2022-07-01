@@ -4,11 +4,13 @@ import { Source } from "./source";
 import { Line, Train, TrainData } from "./train";
 
 export class CTA implements Source {
-    private apiKey = "00ff09063caa46748434d5fa321d048f";
+    private apiKey: string;
 
     public name: string = "cta";
 
-    constructor() {}
+    constructor(apiKey: string) {
+        this.apiKey = apiKey;
+    }
 
     public async getData(): Promise<TrainData> {
         const lines = [

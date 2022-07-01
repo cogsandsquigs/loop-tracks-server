@@ -1,21 +1,21 @@
 export class Logger {
-    public static debug(message: string) {
+    public static debug(message: any) {
         this.log(`[DEBUG] ${message}`);
     }
 
-    public static info(message: string) {
+    public static info(message: any) {
         this.log(`[INFO] ${message}`);
     }
 
-    public static warn(message: string) {
+    public static warn(message: any) {
         this.log(`[WARN] ${message}`);
     }
 
-    public static error(message: string) {
+    public static error(message: any) {
         this.log(`[ERROR] ${message}`);
     }
 
-    private static log(message: string) {
-        console.log(new Date().toISOString() + " " + message);
+    private static log(message: any) {
+        console.log(`${new Date().toISOString()} ${message}`);
     }
 }

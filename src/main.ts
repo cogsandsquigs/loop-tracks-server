@@ -1,7 +1,16 @@
 import { Server } from "./server/server";
+import toml from "toml";
+import fs from "fs";
+import { Logger } from "./logger";
 
-const server = new Server();
+try {
+    let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
 
-let port = process.env.PORT || 3000;
+    const server = new Server(15, config.apiKeys);
 
-server.listen(port);
+    let port = process.env.PORT || 3000;
+
+    server.listen(port);
+} catch (error) {
+    Logger.error(error);
+}
