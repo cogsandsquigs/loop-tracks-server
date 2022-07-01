@@ -99,7 +99,7 @@ export class Server {
 
                     // filters out all the lines that are not in the list of lines requested.
                     // converts the train_lines object to a map, filters the map, and converts it back to an object.
-                    data.lines = data.lines.filter((line) =>
+                    data.lines = data.lines.filter((line: Line) =>
                         lines.includes(line.name)
                     );
                     res.status(200).send(data);
