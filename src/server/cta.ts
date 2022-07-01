@@ -27,8 +27,6 @@ export class CTA implements Source {
 
                 let data = response.data;
 
-                console.log(data);
-
                 resolve(
                     new TrainData(
                         data.ctatt.tmst,
