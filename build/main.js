@@ -10,7 +10,7 @@ var logger_1 = require("./logger");
 try {
     var config = toml_1.default.parse(fs_1.default.readFileSync("./config.toml", "utf8"));
     var server = new server_1.Server(config.cacheUpdateDelay, config.apiKeys);
-    var port = process.env.PORT || 3131;
+    var port = process.env.PORT || 3000;
     server.listen(port);
 }
 catch (error) {
