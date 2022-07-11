@@ -8,7 +8,7 @@ try {
 
     const server = new Server(config.cacheUpdateDelay, config.apiKeys);
 
-    let port = process.env.PORT || 3003;
+    let port = config.port || process.env.PORT || 3003;
 
     server.listen(port);
 } catch (error) {
