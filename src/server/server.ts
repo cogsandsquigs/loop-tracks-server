@@ -70,6 +70,10 @@ export class Server {
             const system = req.params.system.toLowerCase();
             const lines = String(req.query.lines).split(",");
 
+            res.removeHeader("Transfer-Encoding");
+            res.set("Connection", "close");
+            res.removeHeader("Keep-Alive");
+
             if (lines[0] === undefined || lines[0] === "") {
                 res.status(400).send({ error: "No lines specified" });
                 return;
