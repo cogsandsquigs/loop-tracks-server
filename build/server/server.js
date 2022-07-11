@@ -131,6 +131,9 @@ var Server = /** @class */ (function () {
             return __generator(this, function (_a) {
                 system = req.params.system.toLowerCase();
                 lines = String(req.query.lines).split(",");
+                res.removeHeader("Transfer-Encoding");
+                res.set("Connection", "close");
+                res.removeHeader("Keep-Alive");
                 if (lines[0] === undefined || lines[0] === "") {
                     res.status(400).send({ error: "No lines specified" });
                     return [2 /*return*/];
