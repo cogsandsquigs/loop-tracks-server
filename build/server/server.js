@@ -126,7 +126,20 @@ var Server = /** @class */ (function () {
         // creates a new job that runs the task every n seconds
         var job = new toad_scheduler_1.SimpleIntervalJob({ seconds: backgroundCacheUpdateSeconds, runImmediately: true }, task);
         this.scheduler.addSimpleIntervalJob(job);
-        this.router.get("/:system", function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+        // DEPRECIATED: use /system/:system instead
+        this.router.get("/:system", this.trainSystemHandler.bind(this));
+        // Gets train data for a given transportation system
+        this.router.get("/system/:system", this.trainSystemHandler.bind(this));
+    }
+    Server.prototype.listen = function (port) {
+        var app = (0, express_1.default)();
+        app.use("/", this.router);
+        app.listen(port, function () {
+            logger_1.Logger.info("App is listening on port ".concat(port));
+        });
+    };
+    Server.prototype.trainSystemHandler = function (req, res) {
+        return __awaiter(this, void 0, void 0, function () {
             var system, lines, c, _loop_2, _i, lines_1, line, state_1, data;
             return __generator(this, function (_a) {
                 system = req.params.system.toLowerCase();
@@ -147,8 +160,7 @@ var Server = /** @class */ (function () {
                     }
                     else {
                         _loop_2 = function (line) {
-                            if (c.lines.find(function (l) { return l.name == line; }) ===
-                                undefined) {
+                            if (c.lines.find(function (l) { return l.name == line; }) === undefined) {
                                 res.status(400).send({
                                     error: "Line ".concat(line, " does not exist for ").concat(system),
                                 });
@@ -172,13 +184,6 @@ var Server = /** @class */ (function () {
                 }
                 return [2 /*return*/];
             });
-        }); });
-    }
-    Server.prototype.listen = function (port) {
-        var app = (0, express_1.default)();
-        app.use("/", this.router);
-        app.listen(port, function () {
-            logger_1.Logger.info("App is listening on port ".concat(port));
         });
     };
     return Server;

@@ -66,54 +66,10 @@ export class Server {
 
         this.scheduler.addSimpleIntervalJob(job);
 
-        this.router.get("/:system", async (req, res) => {
-            const system = req.params.system.toLowerCase();
-            const lines = String(req.query.lines).split(",");
-
-            res.removeHeader("Transfer-Encoding");
-            res.set("Connection", "close");
-            res.removeHeader("Keep-Alive");
-
-            if (lines[0] === undefined || lines[0] === "") {
-                res.status(400).send({ error: "No lines specified" });
-                return;
-            }
-
-            try {
-                let c = this.cache.get(system);
-
-                if (c === undefined) {
-                    res.status(400).send({
-                        error: "Unknown transportation/railway system",
-                    });
-                } else {
-                    // returns an error if any line requested does not exist for the given system
-                    for (const line of lines) {
-                        if (
-                            c.lines.find((l: Line) => l.name == line) ===
-                            undefined
-                        ) {
-                            res.status(400).send({
-                                error: `Line ${line} does not exist for ${system}`,
-                            });
-                            return;
-                        }
-                    }
-
-                    // hacky way to clone data w/o structuredClone
-                    let data = new TrainData(
-                        c.timestamp,
-                        c.system,
-                        c.lines.filter((l: Line) => lines.includes(l.name))
-                    );
-
-                    res.status(200).send(data);
-                }
-            } catch (err) {
-                console.log(err);
-                res.status(500).send({ error: String(err) });
-            }
-        });
+        // DEPRECIATED: use /system/:system instead
+        this.router.get("/:system", this.trainSystemHandler.bind(this));
+        // Gets train data for a given transportation system
+        this.router.get("/system/:system", this.trainSystemHandler.bind(this));
     }
 
     public listen(port: string | number) {
@@ -122,5 +78,53 @@ export class Server {
         app.listen(port, () => {
             Logger.info(`App is listening on port ${port}`);
         });
+    }
+
+    async trainSystemHandler(req: any, res: any) {
+        const system = req.params.system.toLowerCase();
+        const lines = String(req.query.lines).split(",");
+
+        res.removeHeader("Transfer-Encoding");
+        res.set("Connection", "close");
+        res.removeHeader("Keep-Alive");
+
+        if (lines[0] === undefined || lines[0] === "") {
+            res.status(400).send({ error: "No lines specified" });
+            return;
+        }
+
+        try {
+            let c = this.cache.get(system);
+
+            if (c === undefined) {
+                res.status(400).send({
+                    error: "Unknown transportation/railway system",
+                });
+            } else {
+                // returns an error if any line requested does not exist for the given system
+                for (const line of lines) {
+                    if (
+                        c.lines.find((l: Line) => l.name == line) === undefined
+                    ) {
+                        res.status(400).send({
+                            error: `Line ${line} does not exist for ${system}`,
+                        });
+                        return;
+                    }
+                }
+
+                // hacky way to clone data w/o structuredClone
+                let data = new TrainData(
+                    c.timestamp,
+                    c.system,
+                    c.lines.filter((l: Line) => lines.includes(l.name))
+                );
+
+                res.status(200).send(data);
+            }
+        } catch (err) {
+            console.log(err);
+            res.status(500).send({ error: String(err) });
+        }
     }
 }
