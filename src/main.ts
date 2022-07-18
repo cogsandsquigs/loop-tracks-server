@@ -1,11 +1,11 @@
+import { Logger } from "./logger";
 import { Server } from "./http-server/server";
 import { Twitter } from "./mqtt-twitter/twitter";
 import toml from "toml";
 import fs from "fs";
-import { Logger } from "./logger";
 
 try {
-    let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
+    const config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
 
     const twitter = new Twitter(
         config.twitter.bearerToken,
