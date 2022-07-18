@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -58,111 +35,119 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Twitter = void 0;
-var twitter_api_v2_1 = __importStar(require("twitter-api-v2"));
+var twitter_api_v2_1 = require("twitter-api-v2");
+var twitter_api_sdk_1 = require("twitter-api-sdk");
 var logger_1 = require("../logger");
 var mqtt_1 = __importDefault(require("mqtt"));
 var Twitter = /** @class */ (function () {
     function Twitter(bearerToken, streamingRules, mqttServer, topic) {
         var _this = this;
         this.start = function () { return __awaiter(_this, void 0, void 0, function () {
-            var currentRules_1, _a, _b, _c, _d, _e, _f, stream, error_1;
+            var currentRules_1, _a, _b, _c, stream, stream_1, stream_1_1, tweet, e_1_1, error_1;
             var _this = this;
-            return __generator(this, function (_g) {
-                switch (_g.label) {
+            var e_1, _d;
+            var _e;
+            return __generator(this, function (_f) {
+                switch (_f.label) {
                     case 0:
-                        _g.trys.push([0, 9, , 10]);
-                        return [4 /*yield*/, this.client.v2.streamRules()];
+                        _f.trys.push([0, 20, , 21]);
+                        return [4 /*yield*/, this.client.tweets.getRules()];
                     case 1:
-                        currentRules_1 = _g.sent();
-                        _b = (_a = logger_1.Logger).info;
-                        _c = "Twitter streaming rules: ".concat;
-                        return [4 /*yield*/, this.client.v2.streamRules()];
-                    case 2:
-                        _b.apply(_a, [_c.apply("Twitter streaming rules: ", [((_g.sent()).data || [])
-                                    .map(function (rule) { return "".concat(rule.id, ": ").concat(rule.tag); })
-                                    .join(", ")])]);
+                        currentRules_1 = _f.sent();
+                        logger_1.Logger.info("Twitter streaming rules: ".concat((currentRules_1.data || [])
+                            .map(function (rule) { return "".concat(rule.tag); })
+                            .join(", ")));
                         if (!(currentRules_1.data !== undefined &&
-                            currentRules_1.data.length > 0)) return [3 /*break*/, 4];
-                        return [4 /*yield*/, this.client.v2.updateStreamRules({
+                            currentRules_1.data.length > 0)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, this.client.tweets.addOrDeleteRules({
                                 delete: {
                                     ids: currentRules_1.data.map(function (rule) { return rule.id; }),
                                 },
                             })];
+                    case 2:
+                        _f.sent();
+                        _f.label = 3;
                     case 3:
-                        _g.sent();
-                        _g.label = 4;
-                    case 4:
                         if (!(currentRules_1.data === undefined ||
                             this.streamingRules.filter(function (rule) {
                                 return !currentRules_1.data.find(function (r) { return r.value === rule.value; });
-                            }).length > 0)) return [3 /*break*/, 7];
+                            }).length > 0)) return [3 /*break*/, 6];
                         logger_1.Logger.info("Adding streaming rules...");
-                        return [4 /*yield*/, this.client.v2.updateStreamRules({
+                        return [4 /*yield*/, this.client.tweets.addOrDeleteRules({
                                 add: this.streamingRules.filter(function (rule) {
                                     return !(currentRules_1.data || []).find(function (r) { return r.value === rule.value; });
                                 }),
                             })];
+                    case 4:
+                        _f.sent();
+                        _b = (_a = logger_1.Logger).info;
+                        _c = "Twitter streaming rules updated: ".concat;
+                        return [4 /*yield*/, this.client.tweets.getRules()];
                     case 5:
-                        _g.sent();
-                        _e = (_d = logger_1.Logger).info;
-                        _f = "Twitter streaming rules updated: ".concat;
-                        return [4 /*yield*/, this.client.v2.streamRules()];
-                    case 6:
-                        _e.apply(_d, [_f.apply("Twitter streaming rules updated: ", [(_g.sent()).data
-                                    .map(function (rule) { return "".concat(rule.id, ": ").concat(rule.tag); })
+                        _b.apply(_a, [_c.apply("Twitter streaming rules updated: ", [(_f.sent()).data
+                                    .map(function (rule) { return "".concat(rule.tag); })
                                     .join(", ")])]);
-                        _g.label = 7;
-                    case 7:
+                        _f.label = 6;
+                    case 6:
                         logger_1.Logger.info("Streaming rules up to date.");
-                        return [4 /*yield*/, this.client.v2.searchStream({
-                                autoConnect: true,
-                            })];
+                        return [4 /*yield*/, this.client.tweets.searchStream()];
+                    case 7:
+                        stream = _f.sent();
+                        _f.label = 8;
                     case 8:
-                        stream = _g.sent();
-                        stream.on(
-                        // Emitted when the stream is connected.
-                        twitter_api_v2_1.ETwitterStreamEvent.Connected, function () {
-                            logger_1.Logger.info("Connected to Twitter tweet stream.");
-                        });
-                        stream.on(
-                        // Emitted when Node.js {response} emits a 'error' event (contains its payload).
-                        twitter_api_v2_1.ETwitterStreamEvent.ConnectionError, function (err) { return logger_1.Logger.error("Twitter stream connection error: ".concat(err)); });
-                        stream.on(
-                        // Emitted when the stream connection is lost.
-                        twitter_api_v2_1.ETwitterStreamEvent.ConnectionLost, function () {
-                            logger_1.Logger.error("Connection to Twitter tweet stream lost.");
-                        });
-                        stream.on(
-                        // Emitted when Node.js {response} is closed by remote or using .close().
-                        twitter_api_v2_1.ETwitterStreamEvent.ConnectionClosed, function () { return logger_1.Logger.warn("Connection has been closed."); });
-                        stream.on(
-                        // Emitted when a Twitter payload (a tweet or not, given the endpoint).
-                        twitter_api_v2_1.ETwitterStreamEvent.Data, function (eventData) {
-                            try {
-                                logger_1.Logger.info("Recieved a tweet: \"".concat(eventData.data.text, "\""));
-                                _this.mqtt.publish(_this.topic, JSON.stringify(eventData.data), { qos: 2 }, function (err) {
-                                    if (err) {
-                                        logger_1.Logger.error("Error publishing to MQTT topic ".concat(_this.topic, ": ").concat(err));
-                                    }
-                                });
-                                logger_1.Logger.info("Tweet published to MQTT topic ".concat(_this.topic));
-                            }
-                            catch (error) {
-                                logger_1.Logger.error(error.stack);
-                            }
-                        });
-                        stream.on(
-                        // Emitted when a Twitter sent a signal to maintain connection active
-                        twitter_api_v2_1.ETwitterStreamEvent.DataKeepAlive, function () { return logger_1.Logger.info("Twitter has sent a keep-alive packet."); });
-                        stream.connect();
-                        return [3 /*break*/, 10];
-                    case 9:
-                        error_1 = _g.sent();
+                        _f.trys.push([8, 13, 14, 19]);
+                        stream_1 = __asyncValues(stream);
+                        _f.label = 9;
+                    case 9: return [4 /*yield*/, stream_1.next()];
+                    case 10:
+                        if (!(stream_1_1 = _f.sent(), !stream_1_1.done)) return [3 /*break*/, 12];
+                        tweet = stream_1_1.value;
+                        try {
+                            logger_1.Logger.info("Recieved a tweet: \"".concat((_e = tweet.data) === null || _e === void 0 ? void 0 : _e.text, "\""));
+                            this.mqtt.publish(this.topic, JSON.stringify(tweet.data), { qos: 2 }, function (err) {
+                                if (err) {
+                                    logger_1.Logger.error("Error publishing to MQTT topic ".concat(_this.topic, ": ").concat(err));
+                                }
+                            });
+                            logger_1.Logger.info("Tweet published to MQTT topic ".concat(this.topic));
+                        }
+                        catch (error) {
+                            logger_1.Logger.error(error.stack);
+                        }
+                        _f.label = 11;
+                    case 11: return [3 /*break*/, 9];
+                    case 12: return [3 /*break*/, 19];
+                    case 13:
+                        e_1_1 = _f.sent();
+                        e_1 = { error: e_1_1 };
+                        return [3 /*break*/, 19];
+                    case 14:
+                        _f.trys.push([14, , 17, 18]);
+                        if (!(stream_1_1 && !stream_1_1.done && (_d = stream_1.return))) return [3 /*break*/, 16];
+                        return [4 /*yield*/, _d.call(stream_1)];
+                    case 15:
+                        _f.sent();
+                        _f.label = 16;
+                    case 16: return [3 /*break*/, 18];
+                    case 17:
+                        if (e_1) throw e_1.error;
+                        return [7 /*endfinally*/];
+                    case 18: return [7 /*endfinally*/];
+                    case 19: return [3 /*break*/, 21];
+                    case 20:
+                        error_1 = _f.sent();
                         if (error_1 instanceof twitter_api_v2_1.ApiResponseError &&
                             error_1.rateLimitError &&
                             error_1.rateLimit) {
@@ -173,12 +158,12 @@ var Twitter = /** @class */ (function () {
                         else {
                             logger_1.Logger.error(error_1);
                         }
-                        return [3 /*break*/, 10];
-                    case 10: return [2 /*return*/];
+                        return [3 /*break*/, 21];
+                    case 21: return [2 /*return*/];
                 }
             });
         }); };
-        this.client = new twitter_api_v2_1.default(bearerToken);
+        this.client = new twitter_api_sdk_1.Client(bearerToken); //new TwitterApi(bearerToken);
         this.streamingRules = streamingRules;
         this.mqtt = mqtt_1.default.connect(mqttServer);
         this.topic = topic;
