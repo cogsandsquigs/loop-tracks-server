@@ -1,7 +1,6 @@
 import TwitterApi, {
     ApiResponseError,
     ETwitterStreamEvent,
-    StreamingV2UpdateRulesQuery,
 } from "twitter-api-v2";
 import dotenv from "dotenv";
 import fs from "fs";
