@@ -91,7 +91,7 @@ export class Twitter {
                     `Twitter streaming rules updated: ${(
                         await this.client.tweets.getRules()
                     ).data
-                        .map((rule) => `${rule.tag}`)
+                        .map((rule) => `${rule.tag || rule.value}`)
                         .join(", ")}`
                 );
             }
