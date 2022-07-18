@@ -47,7 +47,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Twitter = void 0;
-var twitter_api_v2_1 = require("twitter-api-v2");
 var twitter_api_sdk_1 = require("twitter-api-sdk");
 var logger_1 = require("../logger");
 var mqtt_1 = __importDefault(require("mqtt"));
@@ -148,16 +147,7 @@ var Twitter = /** @class */ (function () {
                     case 19: return [3 /*break*/, 21];
                     case 20:
                         error_1 = _f.sent();
-                        if (error_1 instanceof twitter_api_v2_1.ApiResponseError &&
-                            error_1.rateLimitError &&
-                            error_1.rateLimit) {
-                            logger_1.Logger.error("Hit the rate limit! Limit for this endpoint is ".concat(error_1.rateLimit.limit, " requests."));
-                            logger_1.Logger.error("".concat(error_1.data.detail));
-                            logger_1.Logger.info("Request counter will reset at ".concat(new Date(error_1.rateLimit.reset), "."));
-                        }
-                        else {
-                            logger_1.Logger.error(error_1);
-                        }
+                        logger_1.Logger.error(error_1.stack);
                         return [3 /*break*/, 21];
                     case 21: return [2 /*return*/];
                 }

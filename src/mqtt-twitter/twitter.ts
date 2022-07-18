@@ -1,7 +1,3 @@
-import TwitterApi, {
-    ApiResponseError,
-    ETwitterStreamEvent,
-} from "twitter-api-v2";
 import { Client as TwitterClient } from "twitter-api-sdk";
 import { Logger } from "../logger";
 import mqtt, { MqttClient } from "mqtt";
@@ -128,23 +124,7 @@ export class Twitter {
                 }
             }
         } catch (error) {
-            if (
-                error instanceof ApiResponseError &&
-                error.rateLimitError &&
-                error.rateLimit
-            ) {
-                Logger.error(
-                    `Hit the rate limit! Limit for this endpoint is ${error.rateLimit.limit} requests.`
-                );
-                Logger.error(`${error.data.detail}`);
-                Logger.info(
-                    `Request counter will reset at ${new Date(
-                        error.rateLimit.reset
-                    )}.`
-                );
-            } else {
-                Logger.error(error);
-            }
+            Logger.error((error as Error).stack);
         }
     };
 }
