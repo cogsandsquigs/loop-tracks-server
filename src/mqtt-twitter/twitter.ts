@@ -14,7 +14,7 @@ export class Twitter {
         mqttServer: string,
         topic: string
     ) {
-        this.client = new TwitterClient(bearerToken); //new TwitterApi(bearerToken);
+        this.client = new TwitterClient(bearerToken);
         this.streamingRules = streamingRules;
         this.mqtt = mqtt.connect(mqttServer);
         this.topic = topic;

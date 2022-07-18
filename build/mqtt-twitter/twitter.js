@@ -144,7 +144,7 @@ var Twitter = /** @class */ (function () {
                 }
             });
         }); };
-        this.client = new twitter_api_sdk_1.Client(bearerToken); //new TwitterApi(bearerToken);
+        this.client = new twitter_api_sdk_1.Client(bearerToken);
         this.streamingRules = streamingRules;
         this.mqtt = mqtt_1.default.connect(mqttServer);
         this.topic = topic;
