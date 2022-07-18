@@ -181,13 +181,14 @@ export class Twitter {
                 Logger.error(
                     `Hit the rate limit! Limit for this endpoint is ${error.rateLimit.limit} requests.`
                 );
+                Logger.error(`${error.data.detail}`);
                 Logger.info(
                     `Request counter will reset at ${new Date(
                         error.rateLimit.reset
                     )}.`
                 );
             } else {
-                Logger.error((error as Error).stack);
+                Logger.error(error);
             }
         }
     };
