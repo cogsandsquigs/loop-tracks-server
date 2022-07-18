@@ -72,15 +72,15 @@ export class Server {
         this.router.get("/system/:system", this.trainSystemHandler.bind(this));
     }
 
-    public listen(port: string | number) {
+    public listen = (port: string | number) => {
         const app = express();
         app.use("/", this.router);
         app.listen(port, () => {
             Logger.info(`App is listening on port ${port}`);
         });
-    }
+    };
 
-    async trainSystemHandler(req: any, res: any) {
+    trainSystemHandler = async (req: any, res: any) => {
         const system = req.params.system.toLowerCase();
         const lines = String(req.query.lines).split(",");
 
@@ -126,5 +126,5 @@ export class Server {
             console.log(err);
             res.status(500).send({ error: String(err) });
         }
-    }
+    };
 }

@@ -12,7 +12,7 @@ export class CTA implements Source {
         this.apiKey = apiKey;
     }
 
-    public async getData(): Promise<TrainData> {
+    public getData = async (): Promise<TrainData> => {
         const lines = [
             "pink",
             "red",
@@ -108,5 +108,5 @@ export class CTA implements Source {
                 reject(error);
             }
         });
-    }
+    };
 }

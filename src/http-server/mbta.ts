@@ -8,7 +8,7 @@ export class MBTA implements Source {
     // doesn't require an api key, so this can be empty
     constructor(apiKey: string) {}
 
-    public getData(): Promise<TrainData> {
+    public getData = async (): Promise<TrainData> => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await axios.get(
@@ -75,5 +75,5 @@ export class MBTA implements Source {
                 reject(error);
             }
         });
-    }
+    };
 }
