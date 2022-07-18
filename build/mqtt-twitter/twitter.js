@@ -167,10 +167,11 @@ var Twitter = /** @class */ (function () {
                             error_1.rateLimitError &&
                             error_1.rateLimit) {
                             logger_1.Logger.error("Hit the rate limit! Limit for this endpoint is ".concat(error_1.rateLimit.limit, " requests."));
+                            logger_1.Logger.error("".concat(error_1.data.detail));
                             logger_1.Logger.info("Request counter will reset at ".concat(new Date(error_1.rateLimit.reset), "."));
                         }
                         else {
-                            logger_1.Logger.error(error_1.stack);
+                            logger_1.Logger.error(error_1);
                         }
                         return [3 /*break*/, 10];
                     case 10: return [2 /*return*/];
