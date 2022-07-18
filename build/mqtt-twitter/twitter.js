@@ -66,7 +66,7 @@ var Twitter = /** @class */ (function () {
                     case 1:
                         currentRules_1 = _f.sent();
                         logger_1.Logger.info("Twitter streaming rules: ".concat((currentRules_1.data || [])
-                            .map(function (rule) { return "".concat(rule.tag); })
+                            .map(function (rule) { return "".concat(rule.tag || rule.value); })
                             .join(", ")));
                         if (!(currentRules_1.data !== undefined &&
                             currentRules_1.data.length > 0)) return [3 /*break*/, 3];
@@ -96,7 +96,7 @@ var Twitter = /** @class */ (function () {
                         return [4 /*yield*/, this.client.tweets.getRules()];
                     case 5:
                         _b.apply(_a, [_c.apply("Twitter streaming rules updated: ", [(_f.sent()).data
-                                    .map(function (rule) { return "".concat(rule.tag); })
+                                    .map(function (rule) { return "".concat(rule.tag || rule.value); })
                                     .join(", ")])]);
                         _f.label = 6;
                     case 6:
