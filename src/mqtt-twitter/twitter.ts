@@ -88,9 +88,7 @@ export class Twitter {
                 });
 
                 Logger.info(
-                    `Twitter streaming rules updated: ${(
-                        await this.client.tweets.getRules()
-                    ).data
+                    `Twitter streaming rules updated: ${this.streamingRules
                         .map((rule) => `${rule.tag || rule.value}`)
                         .join(", ")}`
                 );
@@ -104,24 +102,20 @@ export class Twitter {
             let stream = await this.client.tweets.searchStream();
 
             for await (const tweet of stream) {
-                try {
-                    Logger.info(`Recieved a tweet: "${tweet.data?.text}"`);
-                    this.mqtt.publish(
-                        this.topic,
-                        JSON.stringify(tweet.data),
-                        { qos: 2 },
-                        (err) => {
-                            if (err) {
-                                Logger.error(
-                                    `Error publishing to MQTT topic ${this.topic}: ${err}`
-                                );
-                            }
+                Logger.info(`Recieved a tweet: "${tweet.data?.text}"`);
+                this.mqtt.publish(
+                    this.topic,
+                    JSON.stringify(tweet.data),
+                    { qos: 2 },
+                    (err) => {
+                        if (err) {
+                            Logger.error(
+                                `Error publishing to MQTT topic ${this.topic}: ${err}`
+                            );
                         }
-                    );
-                    Logger.info(`Tweet published to MQTT topic ${this.topic}`);
-                } catch (error) {
-                    Logger.error((error as Error).stack);
-                }
+                    }
+                );
+                Logger.info(`Tweet published to MQTT topic ${this.topic}`);
             }
         } catch (error) {
             Logger.error((error as Error).stack);

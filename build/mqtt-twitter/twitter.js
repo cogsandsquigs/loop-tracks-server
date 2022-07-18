@@ -54,17 +54,17 @@ var Twitter = /** @class */ (function () {
     function Twitter(bearerToken, streamingRules, mqttServer, topic) {
         var _this = this;
         this.start = function () { return __awaiter(_this, void 0, void 0, function () {
-            var currentRules_1, _a, _b, _c, stream, stream_1, stream_1_1, tweet, e_1_1, error_1;
+            var currentRules_1, stream, stream_1, stream_1_1, tweet, e_1_1, error_1;
             var _this = this;
-            var e_1, _d;
-            var _e;
-            return __generator(this, function (_f) {
-                switch (_f.label) {
+            var e_1, _a;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        _f.trys.push([0, 20, , 21]);
+                        _c.trys.push([0, 19, , 20]);
                         return [4 /*yield*/, this.client.tweets.getRules()];
                     case 1:
-                        currentRules_1 = _f.sent();
+                        currentRules_1 = _c.sent();
                         logger_1.Logger.info("Twitter streaming rules: ".concat((currentRules_1.data || [])
                             .map(function (rule) { return "".concat(rule.tag || rule.value); })
                             .join(", ")));
@@ -76,13 +76,13 @@ var Twitter = /** @class */ (function () {
                                 },
                             })];
                     case 2:
-                        _f.sent();
-                        _f.label = 3;
+                        _c.sent();
+                        _c.label = 3;
                     case 3:
                         if (!(currentRules_1.data === undefined ||
                             this.streamingRules.filter(function (rule) {
                                 return !currentRules_1.data.find(function (r) { return r.value === rule.value; });
-                            }).length > 0)) return [3 /*break*/, 6];
+                            }).length > 0)) return [3 /*break*/, 5];
                         logger_1.Logger.info("Adding streaming rules...");
                         return [4 /*yield*/, this.client.tweets.addOrDeleteRules({
                                 add: this.streamingRules.filter(function (rule) {
@@ -90,66 +90,57 @@ var Twitter = /** @class */ (function () {
                                 }),
                             })];
                     case 4:
-                        _f.sent();
-                        _b = (_a = logger_1.Logger).info;
-                        _c = "Twitter streaming rules updated: ".concat;
-                        return [4 /*yield*/, this.client.tweets.getRules()];
+                        _c.sent();
+                        logger_1.Logger.info("Twitter streaming rules updated: ".concat(this.streamingRules
+                            .map(function (rule) { return "".concat(rule.tag || rule.value); })
+                            .join(", ")));
+                        _c.label = 5;
                     case 5:
-                        _b.apply(_a, [_c.apply("Twitter streaming rules updated: ", [(_f.sent()).data
-                                    .map(function (rule) { return "".concat(rule.tag || rule.value); })
-                                    .join(", ")])]);
-                        _f.label = 6;
-                    case 6:
                         logger_1.Logger.info("Streaming rules up to date.");
                         return [4 /*yield*/, this.client.tweets.searchStream()];
+                    case 6:
+                        stream = _c.sent();
+                        _c.label = 7;
                     case 7:
-                        stream = _f.sent();
-                        _f.label = 8;
-                    case 8:
-                        _f.trys.push([8, 13, 14, 19]);
+                        _c.trys.push([7, 12, 13, 18]);
                         stream_1 = __asyncValues(stream);
-                        _f.label = 9;
-                    case 9: return [4 /*yield*/, stream_1.next()];
-                    case 10:
-                        if (!(stream_1_1 = _f.sent(), !stream_1_1.done)) return [3 /*break*/, 12];
+                        _c.label = 8;
+                    case 8: return [4 /*yield*/, stream_1.next()];
+                    case 9:
+                        if (!(stream_1_1 = _c.sent(), !stream_1_1.done)) return [3 /*break*/, 11];
                         tweet = stream_1_1.value;
-                        try {
-                            logger_1.Logger.info("Recieved a tweet: \"".concat((_e = tweet.data) === null || _e === void 0 ? void 0 : _e.text, "\""));
-                            this.mqtt.publish(this.topic, JSON.stringify(tweet.data), { qos: 2 }, function (err) {
-                                if (err) {
-                                    logger_1.Logger.error("Error publishing to MQTT topic ".concat(_this.topic, ": ").concat(err));
-                                }
-                            });
-                            logger_1.Logger.info("Tweet published to MQTT topic ".concat(this.topic));
-                        }
-                        catch (error) {
-                            logger_1.Logger.error(error.stack);
-                        }
-                        _f.label = 11;
-                    case 11: return [3 /*break*/, 9];
-                    case 12: return [3 /*break*/, 19];
-                    case 13:
-                        e_1_1 = _f.sent();
+                        logger_1.Logger.info("Recieved a tweet: \"".concat((_b = tweet.data) === null || _b === void 0 ? void 0 : _b.text, "\""));
+                        this.mqtt.publish(this.topic, JSON.stringify(tweet.data), { qos: 2 }, function (err) {
+                            if (err) {
+                                logger_1.Logger.error("Error publishing to MQTT topic ".concat(_this.topic, ": ").concat(err));
+                            }
+                        });
+                        logger_1.Logger.info("Tweet published to MQTT topic ".concat(this.topic));
+                        _c.label = 10;
+                    case 10: return [3 /*break*/, 8];
+                    case 11: return [3 /*break*/, 18];
+                    case 12:
+                        e_1_1 = _c.sent();
                         e_1 = { error: e_1_1 };
-                        return [3 /*break*/, 19];
+                        return [3 /*break*/, 18];
+                    case 13:
+                        _c.trys.push([13, , 16, 17]);
+                        if (!(stream_1_1 && !stream_1_1.done && (_a = stream_1.return))) return [3 /*break*/, 15];
+                        return [4 /*yield*/, _a.call(stream_1)];
                     case 14:
-                        _f.trys.push([14, , 17, 18]);
-                        if (!(stream_1_1 && !stream_1_1.done && (_d = stream_1.return))) return [3 /*break*/, 16];
-                        return [4 /*yield*/, _d.call(stream_1)];
-                    case 15:
-                        _f.sent();
-                        _f.label = 16;
-                    case 16: return [3 /*break*/, 18];
-                    case 17:
+                        _c.sent();
+                        _c.label = 15;
+                    case 15: return [3 /*break*/, 17];
+                    case 16:
                         if (e_1) throw e_1.error;
                         return [7 /*endfinally*/];
-                    case 18: return [7 /*endfinally*/];
-                    case 19: return [3 /*break*/, 21];
-                    case 20:
-                        error_1 = _f.sent();
+                    case 17: return [7 /*endfinally*/];
+                    case 18: return [3 /*break*/, 20];
+                    case 19:
+                        error_1 = _c.sent();
                         logger_1.Logger.error(error_1.stack);
-                        return [3 /*break*/, 21];
-                    case 21: return [2 /*return*/];
+                        return [3 /*break*/, 20];
+                    case 20: return [2 /*return*/];
                 }
             });
         }); };
