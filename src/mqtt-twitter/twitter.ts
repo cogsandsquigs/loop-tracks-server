@@ -5,20 +5,20 @@ import TwitterApi, {
 import { Logger } from "../logger";
 import mqtt, { MqttClient } from "mqtt";
 
-const streamingRules = [
-    {
-        tag: "get tweets only from @cogsandsquigs",
-        value: "from:cogsandsquigs",
-    },
-];
-
 export class Twitter {
     private client: TwitterApi;
-    private mqtt: mqtt.MqttClient;
+    private streamingRules: { tag?: string; value: string }[];
+    private mqtt: MqttClient;
     private topic: string;
 
-    constructor(bearerToken: string, mqttServer: string, topic: string) {
+    constructor(
+        bearerToken: string,
+        streamingRules: { tag?: string; value: string }[],
+        mqttServer: string,
+        topic: string
+    ) {
         this.client = new TwitterApi(bearerToken);
+        this.streamingRules = streamingRules;
         this.mqtt = mqtt.connect(mqttServer);
         this.topic = topic;
 
@@ -74,7 +74,7 @@ export class Twitter {
 
             if (
                 currentRules.data === undefined ||
-                streamingRules.filter(
+                this.streamingRules.filter(
                     (rule) =>
                         !currentRules.data.find((r) => r.value === rule.value)
                 ).length > 0
@@ -82,7 +82,7 @@ export class Twitter {
                 Logger.info("Adding streaming rules...");
 
                 await this.client.v2.updateStreamRules({
-                    add: streamingRules.filter(
+                    add: this.streamingRules.filter(
                         (rule) =>
                             !(currentRules.data || []).find(
                                 (r) => r.value === rule.value

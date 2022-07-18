@@ -8,12 +8,13 @@ try {
     let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
 
     const twitter = new Twitter(
-        config.apiKeys.twitter.bearerToken,
+        config.twitter.bearerToken,
+        config.twitter.streamingRules,
         config.mqtt.server,
-        config.mqtt.twitter.topic
+        config.twitter.mqtt.topic
     );
 
-    const server = new Server(config.cacheUpdateDelay, config.apiKeys.trains);
+    const server = new Server(config.cacheUpdateDelay, config.trains.apiKeys);
 
     let port = config.port || process.env.PORT || 3003;
 
