@@ -2,16 +2,7 @@ import TwitterApi, {
     ApiResponseError,
     ETwitterStreamEvent,
 } from "twitter-api-v2";
-import dotenv from "dotenv";
-import fs from "fs";
 import { Logger } from "../logger";
-
-// sets twitter API keys from .env file
-process.env.TWITTER_BEARER_TOKEN =
-    dotenv.parse(fs.readFileSync(".env")).TWITTER_BEARER_TOKEN ||
-    process.env.TWITTER_BEARER_TOKEN;
-
-const client = new TwitterApi(process.env.TWITTER_BEARER_TOKEN || "");
 
 const streamingRules = [
     {
@@ -20,7 +11,9 @@ const streamingRules = [
     },
 ];
 
-export const test = async () => {
+export const test = async (bearer: string) => {
+    const client = new TwitterApi(bearer);
+
     try {
         /**
          * Updating streaming rules, so that we can verify that all rules are

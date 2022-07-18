@@ -4,10 +4,10 @@ import fs from "fs";
 import { Logger } from "./logger";
 import { test } from "./mqtt-twitter/twitter";
 
-test();
-
 try {
     let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
+
+    test(config.apiKeys.twitter.bearerToken);
 
     const server = new Server(config.cacheUpdateDelay, config.apiKeys.trains);
 
