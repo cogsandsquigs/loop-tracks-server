@@ -52,7 +52,7 @@ export class Twitter {
 
             Logger.info(
                 `Twitter streaming rules: ${(currentRules.data || [])
-                    .map((rule) => `${rule.tag}`)
+                    .map((rule) => `${rule.tag || rule.value}`)
                     .join(", ")}`
             );
 
