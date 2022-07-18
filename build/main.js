@@ -12,8 +12,7 @@ try {
     var config = toml_1.default.parse(fs_1.default.readFileSync("./config.toml", "utf8"));
     var twitter = new twitter_1.Twitter(config.twitter.bearerToken, config.twitter.streamingRules, config.twitter.mqtt.server, config.twitter.mqtt.topic);
     var server = new server_1.Server(config.trains.cacheUpdateDelay, config.trains.apiKeys);
-    var port = config.port || process.env.PORT || 3003;
-    server.start(port);
+    server.start(config.port || process.env.PORT || 3003);
     twitter.start();
 }
 catch (error) {

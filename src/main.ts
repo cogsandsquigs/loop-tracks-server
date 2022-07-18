@@ -19,9 +19,7 @@ try {
         config.trains.apiKeys
     );
 
-    let port = config.port || process.env.PORT || 3003;
-
-    server.start(port);
+    server.start(config.port || process.env.PORT || 3003);
     twitter.start();
 } catch (error) {
     Logger.error(error);
