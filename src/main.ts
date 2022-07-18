@@ -10,11 +10,14 @@ try {
     const twitter = new Twitter(
         config.twitter.bearerToken,
         config.twitter.streamingRules,
-        config.mqtt.server,
+        config.twitter.mqtt.server,
         config.twitter.mqtt.topic
     );
 
-    const server = new Server(config.cacheUpdateDelay, config.trains.apiKeys);
+    const server = new Server(
+        config.trains.cacheUpdateDelay,
+        config.trains.apiKeys
+    );
 
     let port = config.port || process.env.PORT || 3003;
 
