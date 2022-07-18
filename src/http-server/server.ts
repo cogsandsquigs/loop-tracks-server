@@ -72,7 +72,7 @@ export class Server {
         this.router.get("/system/:system", this.trainSystemHandler.bind(this));
     }
 
-    public listen = (port: string | number) => {
+    public start = (port: string | number) => {
         const app = express();
         app.use("/", this.router);
         app.listen(port, () => {

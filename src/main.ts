@@ -1,19 +1,24 @@
 import { Server } from "./http-server/server";
+import { Twitter } from "./mqtt-twitter/twitter";
 import toml from "toml";
 import fs from "fs";
 import { Logger } from "./logger";
-import { test } from "./mqtt-twitter/twitter";
 
 try {
     let config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
 
-    test(config.apiKeys.twitter.bearerToken);
+    const twitter = new Twitter(
+        config.apiKeys.twitter.bearerToken,
+        config.mqtt.server,
+        config.mqtt.twitter.topic
+    );
 
     const server = new Server(config.cacheUpdateDelay, config.apiKeys.trains);
 
     let port = config.port || process.env.PORT || 3003;
 
-    server.listen(port);
+    server.start(port);
+    twitter.start();
 } catch (error) {
     Logger.error(error);
 }
