@@ -1,22 +1,20 @@
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from "toad-scheduler";
 import express, { Router } from "express";
-import { Logger } from "../logger";
-import { CTA } from "./cta";
-import { Source, SourceConstructor } from "./source";
-import { Line, TrainData } from "./train";
-import { MBTA } from "./mbta";
+import { Logger } from "../logger.js";
+import { CTA } from "./cta.js";
+import { MBTA } from "./mbta.js";
 
 export class Server {
-    private router: Router;
-    private scheduler: ToadScheduler;
-    private cache: Map<string, TrainData>;
-    private sourceConstructors: SourceConstructor[];
-    private sources: Source[] = [];
+    router;
+    scheduler;
+    cache;
+    sourceConstructors;
+    sources = [];
 
-    constructor(backgroundCacheUpdateSeconds: number, apiKeys: Object) {
+    constructor(backgroundCacheUpdateSeconds, apiKeys) {
         this.router = Router();
         this.scheduler = new ToadScheduler();
-        this.cache = new Map<string, TrainData>();
+        this.cache = new Map();
 
         this.sourceConstructors = [CTA, MBTA];
 
@@ -51,7 +49,7 @@ export class Server {
                 Logger.info("Train data cache updated!");
             },
 
-            (err: Error) => {
+            (err) => {
                 Logger.error(
                     `Error while updating data: ${err.message}\n${err.stack}`
                 );
@@ -72,7 +70,7 @@ export class Server {
         this.router.get("/system/:system", this.trainSystemHandler.bind(this));
     }
 
-    public start = (port: string | number) => {
+    start = (port) => {
         const app = express();
         app.use("/", this.router);
         app.listen(port, () => {
@@ -80,7 +78,7 @@ export class Server {
         });
     };
 
-    trainSystemHandler = async (req: any, res: any) => {
+    trainSystemHandler = async (req, res) => {
         const system = req.params.system.toLowerCase();
         const lines = String(req.query.lines).split(",");
 
@@ -103,9 +101,7 @@ export class Server {
             } else {
                 // returns an error if any line requested does not exist for the given system
                 for (const line of lines) {
-                    if (
-                        c.lines.find((l: Line) => l.name == line) === undefined
-                    ) {
+                    if (c.lines.find((l) => l.name == line) === undefined) {
                         res.status(400).send({
                             error: `Line ${line} does not exist for ${system}`,
                         });
@@ -117,7 +113,7 @@ export class Server {
                 let data = new TrainData(
                     c.timestamp,
                     c.system,
-                    c.lines.filter((l: Line) => lines.includes(l.name))
+                    c.lines.filter((l) => lines.includes(l.name))
                 );
 
                 res.status(200).send(data);

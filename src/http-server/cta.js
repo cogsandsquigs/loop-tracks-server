@@ -1,18 +1,17 @@
 import axios from "axios";
-import { Logger } from "../logger";
-import { Source } from "./source";
-import { Line, Train, TrainData } from "./train";
+import { Logger } from "../logger.js";
+import { Line, Train, TrainData } from "./train.js";
 
-export class CTA implements Source {
-    private apiKey: string;
+export class CTA {
+    apiKey;
 
-    public name: string = "cta";
+    name = "cta";
 
-    constructor(apiKey: string) {
+    constructor(apiKey) {
         this.apiKey = apiKey;
     }
 
-    public getData = async (): Promise<TrainData> => {
+    getData = async () => {
         const lines = [
             "pink",
             "red",
@@ -66,7 +65,7 @@ export class CTA implements Source {
 
                         data.ctatt.route
                             // converts the train data to a list of Line objects
-                            .map((route: any, index: number) => {
+                            .map((route, index) => {
                                 if (route.train == undefined) {
                                     Logger.warn(
                                         `No train data found for ${lines[index]} line`
@@ -90,7 +89,7 @@ export class CTA implements Source {
 
                                 return new Line(
                                     lines[index],
-                                    route.train.map((train: any) => {
+                                    route.train.map((train) => {
                                         return new Train(
                                             train.nextStaNm,
                                             train.destNm,

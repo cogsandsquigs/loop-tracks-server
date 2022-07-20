@@ -1,19 +1,14 @@
 import { Client as TwitterClient } from "twitter-api-sdk";
-import { Logger } from "../logger";
-import mqtt, { MqttClient } from "mqtt";
+import { Logger } from "../logger.js";
+import mqtt from "mqtt";
 
 export class Twitter {
-    private client: TwitterClient;
-    private streamingRules: { tag?: string; value: string }[];
-    private mqtt: MqttClient;
-    private topic: string;
+    client;
+    streamingRules;
+    mqtt;
+    topic;
 
-    constructor(
-        bearerToken: string,
-        streamingRules: { tag?: string; value: string }[],
-        mqttServer: string,
-        topic: string
-    ) {
+    constructor(bearerToken, streamingRules, mqttServer, topic) {
         this.client = new TwitterClient(bearerToken);
         this.streamingRules = streamingRules;
         this.mqtt = mqtt.connect(mqttServer);
@@ -40,7 +35,7 @@ export class Twitter {
         });
     }
 
-    public start = async (): Promise<void> => {
+    start = async () => {
         try {
             /**
              * Updating streaming rules, so that we can verify that all rules are
@@ -62,9 +57,7 @@ export class Twitter {
             ) {
                 await this.client.tweets.addOrDeleteRules({
                     delete: {
-                        ids: currentRules.data.map(
-                            (rule) => rule.id
-                        ) as string[],
+                        ids: currentRules.data.map((rule) => rule.id),
                     },
                 });
             }
@@ -100,8 +93,9 @@ export class Twitter {
              * Run the twitter tweet stream.
              */
             let stream = await this.client.tweets.searchStream();
-
-            for await (const tweet of stream) {
+            Logger.info("Streaming...");
+            while (true) {
+                let tweet = (await stream.next()).value;
                 Logger.info(`Recieved a tweet: "${tweet.data?.text}"`);
                 this.mqtt.publish(
                     this.topic,
@@ -118,7 +112,7 @@ export class Twitter {
                 Logger.info(`Tweet published to MQTT topic ${this.topic}`);
             }
         } catch (error) {
-            Logger.error((error as Error).stack);
+            Logger.error(error.stack);
         }
     };
 }

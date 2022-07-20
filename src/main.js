@@ -1,6 +1,6 @@
-import { Logger } from "./logger";
-import { Server } from "./http-server/server";
-import { Twitter } from "./mqtt-twitter/twitter";
+import { Logger } from "./logger.js";
+import { Server } from "./http-server/server.js";
+import { Twitter } from "./mqtt-twitter/twitter.js";
 import toml from "toml";
 import fs from "fs";
 
