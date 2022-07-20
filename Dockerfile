@@ -14,10 +14,8 @@ RUN npm i --omit dev
 # Bundle app source
 COPY . .
 
-RUN npm run build
-
 ARG PORT=8080
 
 EXPOSE 8080
 
-CMD [ "node", "build/main.js" ]
+CMD [ "npm", "run", "start" ]
