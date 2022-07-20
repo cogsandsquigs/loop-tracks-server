@@ -74,7 +74,7 @@ export class Server {
         const app = express();
         app.use("/", this.router);
         app.listen(port, () => {
-            Logger.info(`App is listening on port ${port}`);
+            Logger.info(`Train data server is listening on port ${port}`);
         });
     };
 

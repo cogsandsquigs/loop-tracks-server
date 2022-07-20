@@ -1,15 +1,22 @@
-import { Client as TwitterClient } from "twitter-api-sdk";
+import {
+    TwitterApi as TwitterClient,
+    ETwitterStreamEvent,
+} from "twitter-api-v2";
 import { Logger } from "../logger.js";
 import mqtt from "mqtt";
+import { Stream } from "./stream.js";
 
 export class Twitter {
     client;
+    bearerToken;
     streamingRules;
+    stream;
     mqtt;
     topic;
 
     constructor(bearerToken, streamingRules, mqttServer, topic) {
         this.client = new TwitterClient(bearerToken);
+        this.bearerToken = bearerToken;
         this.streamingRules = streamingRules;
         this.mqtt = mqtt.connect(mqttServer);
         this.topic = topic;
@@ -37,80 +44,16 @@ export class Twitter {
 
     start = async () => {
         try {
-            /**
-             * Updating streaming rules, so that we can verify that all rules are
-             * a) up-to-date, and
-             * b) are being applied to the stream.
-             */
+            let stream = new Stream(this.bearerToken);
 
-            const currentRules = await this.client.tweets.getRules();
+            stream.applyRules(this.streamingRules);
 
-            Logger.info(
-                `Twitter streaming rules: ${(currentRules.data || [])
-                    .map((rule) => `${rule.tag || rule.value}`)
-                    .join(", ")}`
-            );
-
-            if (
-                currentRules.data !== undefined &&
-                currentRules.data.length > 0
-            ) {
-                await this.client.tweets.addOrDeleteRules({
-                    delete: {
-                        ids: currentRules.data.map((rule) => rule.id),
-                    },
+            await stream.connect((tweet) => {
+                Logger.info(`Recieved a tweet: "${tweet.text}"`);
+                this.mqtt.publish(this.topic, JSON.stringify(tweet), {
+                    qos: 2,
                 });
-            }
-
-            if (
-                currentRules.data === undefined ||
-                this.streamingRules.filter(
-                    (rule) =>
-                        !currentRules.data.find((r) => r.value === rule.value)
-                ).length > 0
-            ) {
-                Logger.info("Adding streaming rules...");
-
-                await this.client.tweets.addOrDeleteRules({
-                    add: this.streamingRules.filter(
-                        (rule) =>
-                            !(currentRules.data || []).find(
-                                (r) => r.value === rule.value
-                            )
-                    ),
-                });
-
-                Logger.info(
-                    `Twitter streaming rules updated: ${this.streamingRules
-                        .map((rule) => `${rule.tag || rule.value}`)
-                        .join(", ")}`
-                );
-            }
-
-            Logger.info("Streaming rules up to date.");
-
-            /**
-             * Run the twitter tweet stream.
-             */
-            let stream = await this.client.tweets.searchStream();
-            Logger.info("Streaming...");
-            while (true) {
-                let tweet = (await stream.next()).value;
-                Logger.info(`Recieved a tweet: "${tweet.data?.text}"`);
-                this.mqtt.publish(
-                    this.topic,
-                    JSON.stringify(tweet.data),
-                    { qos: 2 },
-                    (err) => {
-                        if (err) {
-                            Logger.error(
-                                `Error publishing to MQTT topic ${this.topic}: ${err}`
-                            );
-                        }
-                    }
-                );
-                Logger.info(`Tweet published to MQTT topic ${this.topic}`);
-            }
+            });
         } catch (error) {
             Logger.error(error.stack);
         }

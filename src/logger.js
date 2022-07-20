@@ -1,4 +1,12 @@
+import fs from "fs";
+
 export class Logger {
+    logToFile; // the filename you are logging to
+
+    static config(config) {
+        this.logToFile = config.logToFile;
+    }
+
     static debug(message) {
         this.log(`[DEBUG] ${message}`);
     }
@@ -16,6 +24,14 @@ export class Logger {
     }
 
     static log(message) {
+        if (
+            this.logToFile !== null &&
+            this.logToFile !== undefined &&
+            this.logToFile !== ""
+        ) {
+            fs.appendFileSync(this.logToFile, `${message}\n`);
+        }
+
         console.log(`${new Date().toISOString()} ${message}`);
     }
 }

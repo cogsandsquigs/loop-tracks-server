@@ -1,8 +1,15 @@
+import "./catch.js";
 import { Logger } from "./logger.js";
 import { Server } from "./http-server/server.js";
 import { Twitter } from "./mqtt-twitter/twitter.js";
 import toml from "toml";
 import fs from "fs";
+
+Logger.config({
+    logToFile: "loop-tracks-server.log",
+});
+
+Logger.info("Starting server...");
 
 try {
     const config = toml.parse(fs.readFileSync("./config.toml", "utf8"));
