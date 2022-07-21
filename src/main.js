@@ -10,6 +10,7 @@ Logger.config({
 });
 
 Logger.info("Starting server...");
+Logger.info(`Using node version ${process.version}`);
 
 try {
     const config = toml.parse(fs.readFileSync("./config.toml", "utf8"));

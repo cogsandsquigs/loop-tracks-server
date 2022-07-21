@@ -2,6 +2,5 @@
 
 API server for the loop tracks project
 
-NOTES:
-
--   It is necessary to restart the server after you have started it for the Tweet Tracker to work
+Because this code requires the `fetch` module, only node >= 17.x.x will work.
+To use with `pm2`, run `pm2 start loop-tracks-server --interpereter=/home/ian/.nvm/versions/node/v18.6.0/bin/node`

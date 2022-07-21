@@ -1,6 +1,6 @@
 {
     "name": "loop-tracks-server",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "API server for the loop tracks project.",
     "main": "index.js",
     "type": "module",
