@@ -1,6 +1,5 @@
 import { Logger } from "../logger.js";
 import path from "path";
-import { Readable } from "node:stream";
 
 const v2endpoint = "api.twitter.com/2";
 

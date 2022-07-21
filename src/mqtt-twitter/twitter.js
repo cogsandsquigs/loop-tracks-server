@@ -1,13 +1,8 @@
-import {
-    TwitterApi as TwitterClient,
-    ETwitterStreamEvent,
-} from "twitter-api-v2";
 import { Logger } from "../logger.js";
 import mqtt from "mqtt";
 import { Stream } from "./stream.js";
 
 export class Twitter {
-    client;
     bearerToken;
     streamingRules;
     stream;
@@ -15,7 +10,6 @@ export class Twitter {
     topic;
 
     constructor(bearerToken, streamingRules, mqttServer, topic) {
-        this.client = new TwitterClient(bearerToken);
         this.bearerToken = bearerToken;
         this.streamingRules = streamingRules;
         this.mqtt = mqtt.connect(mqttServer);
