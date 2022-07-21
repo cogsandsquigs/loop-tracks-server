@@ -70,7 +70,7 @@ export class Stream {
 
             const response = await this.get(streamEndpoint);
 
-            Logger.debug(`Got response status ${response.status}`);
+            Logger.debug(`Got stream response status ${response.status}`);
 
             const reader = response.body.getReader();
 
