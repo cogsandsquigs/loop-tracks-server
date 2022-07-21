@@ -48,8 +48,10 @@ export class Twitter {
 
             stream.applyRules(this.streamingRules);
 
-            await stream.connect((tweet) => {
+            await stream.connect((data) => {
+                const tweet = data["data"];
                 Logger.info(`Recieved a tweet: "${tweet.text}"`);
+                Logger.info("Publishing to mqtt...");
                 this.mqtt.publish(this.topic, JSON.stringify(tweet), {
                     qos: 2,
                 });

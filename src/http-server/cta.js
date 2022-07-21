@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Logger } from "../logger.js";
 import { Line, Train, TrainData } from "./train.js";
 
@@ -52,11 +51,11 @@ export class CTA {
         // fetches data from the CTA API
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await axios.get(
+                const response = await fetch(
                     `http://lapi.transitchicago.com//api/1.0/ttpositions.aspx?key=${this.apiKey}&rt=${requestLines}&outputType=JSON`
                 );
 
-                let data = response.data;
+                let data = await response.json();
 
                 resolve(
                     new TrainData(

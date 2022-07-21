@@ -57,7 +57,7 @@ export class Stream {
                     Logger.info("Twitter sent a keep-alive packet.");
                     break;
                 default:
-                    onData(JSON.parse(data)["data"]);
+                    onData(JSON.parse(data));
                     break;
             }
         });

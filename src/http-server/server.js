@@ -3,6 +3,7 @@ import express, { Router } from "express";
 import { Logger } from "../logger.js";
 import { CTA } from "./cta.js";
 import { MBTA } from "./mbta.js";
+import { TrainData } from "./train.js";
 
 export class Server {
     router;
