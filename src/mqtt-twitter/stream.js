@@ -51,25 +51,27 @@ export class Stream {
 
     connect = async (onData) => {
         this.handleStream("tweets/search/stream", (data) => {
-            switch (data) {
-                case "\r\n":
-                    Logger.info("Twitter sent a keep-alive packet.");
-                    break;
-                default:
-                    onData(JSON.parse(data));
-                    break;
-            }
+            onData(data);
         });
     };
 
     handleStream = async (streamEndpoint, onData, reconnectTries) => {
-        const reader = (await this.get(streamEndpoint)).body.getReader();
+        try {
+            if (reconnectTries > 3) {
+                Logger.warn(
+                    `Reconnected too many times. Sleeping for ${
+                        30 * (reconnectTries - 2)
+                    } seconds.`
+                );
+                await sleep(30000 * (reconnectTries - 2));
+            }
 
-        Logger.info(`Connecting to stream at ${streamEndpoint}...`);
+            const reader = (await this.get(streamEndpoint)).body.getReader();
 
-        let stream = new ReadableStream({
-            start(controller) {
-                try {
+            Logger.info(`Connecting to stream at ${streamEndpoint}...`);
+
+            let stream = new ReadableStream({
+                start(controller) {
                     // The following function handles each data chunk
                     function push() {
                         // "done" is a Boolean and value a "Uint8Array"
@@ -89,52 +91,45 @@ export class Stream {
                     }
 
                     push();
-                } catch (error) {
-                    Logger.error(error.stack);
-                }
-            },
-        });
+                },
+            });
 
-        Logger.info(`Connected to stream at ${streamEndpoint}`);
-        try {
+            Logger.info(`Connected to stream at ${streamEndpoint}`);
+
             for await (const chunk of stream) {
-                reconnectTries = 0;
-                onData(new TextDecoder().decode(chunk));
+                let data = new TextDecoder().decode(chunk);
+                switch (data) {
+                    case "\r\n":
+                        reconnectTries = 0;
+
+                        Logger.debug("Twitter sent a keep-alive packet.");
+
+                        break;
+                    default:
+                        Logger.debug(`Got packet: ${data}`);
+
+                        reconnectTries = 0;
+
+                        onData(JSON.parse(data));
+
+                        break;
+                }
             }
 
             reconnectTries += 1;
 
             Logger.info(`Stream at ${streamEndpoint} closed. Reconnecting...`);
 
-            if (reconnectTries > 3) {
-                Logger.warn(
-                    `Reconnected too many times. Sleeping for ${
-                        30 * (reconnectTries - 2)
-                    } seconds.`
-                );
-                await sleep(30000 * (reconnectTries - 2));
-            }
-
             this.handleStream(streamEndpoint, onData);
         } catch (error) {
             reconnectTries += 1;
 
             Logger.error(error.stack);
-
             Logger.error(
                 `Stream at ${streamEndpoint} closed with an error. Reconnecting...`
             );
 
             await stream.cancel(error);
-
-            if (reconnectTries > 3) {
-                Logger.warn(
-                    `Reconnected too many times. Sleeping for ${
-                        30 * reconnectTries
-                    } seconds.`
-                );
-                await sleep(30000 * reconnectTries);
-            }
 
             this.handleStream(streamEndpoint, onData);
         }
