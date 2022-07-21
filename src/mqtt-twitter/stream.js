@@ -66,9 +66,13 @@ export class Stream {
                 await sleep(30000 * (reconnectTries - 2));
             }
 
-            const reader = (await this.get(streamEndpoint)).body.getReader();
-
             Logger.info(`Connecting to stream at ${streamEndpoint}...`);
+
+            const response = await this.get(streamEndpoint);
+
+            Logger.debug(`Got response status ${response.status}`);
+
+            const reader = response.body.getReader();
 
             let stream = new ReadableStream({
                 start(controller) {
