@@ -14,8 +14,6 @@ RUN npm i --omit dev
 # Bundle app source
 COPY . .
 
-ARG PORT=8080
-
-EXPOSE 8080
+EXPOSE 3003
 
 CMD [ "npm", "run", "start" ]
