@@ -24,7 +24,7 @@ export class Logger {
             this.scheduler.addLongIntervalJob(
                 new LongIntervalJob(
                     {
-                        hours: this.archivalInterval,
+                        seconds: this.archivalInterval,
                     },
                     new AsyncTask("Archive logs", this.archiveLogs.bind(this))
                 )
@@ -42,7 +42,7 @@ export class Logger {
         let files = fs.readdirSync(this.logDir);
 
         let log = files.filter((file) => file.endsWith(".log"))[0];
-        let archives = files.filter((file) => file.endsWith(".log.br"));
+        let archives = files.filter((file) => file.endsWith(".log.gz"));
 
         if (archives.length >= this.keepNumArchives) {
             archives
@@ -59,10 +59,10 @@ export class Logger {
         // compress contents of log file into a new file with .br (brotli) extension
         // and delete the original log file.
 
-        const brotli = zlib.createBrotliCompress();
+        const brotli = zlib.createGzip();
         const inStream = fs.createReadStream(path.join(this.logDir, log));
         const outStream = fs.createWriteStream(
-            path.join(this.logDir, `logger-${new Date().toISOString()}.log.br`)
+            path.join(this.logDir, `logger-${new Date().toISOString()}.log.gz`)
         );
         inStream.pipe(brotli).pipe(outStream);
         inStream.on("end", () => {
