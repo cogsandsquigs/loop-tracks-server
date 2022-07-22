@@ -6,7 +6,7 @@ import toml from "toml";
 import fs from "fs";
 
 Logger.config({
-    logToFile: "loop-tracks-server.log",
+    logDir: "logs",
 });
 
 Logger.info("Starting server...");
