@@ -59,12 +59,12 @@ export class Logger {
         // compress contents of log file into a new file with .br (brotli) extension
         // and delete the original log file.
 
-        const brotli = zlib.createGzip();
+        const compressor = zlib.createGzip();
         const inStream = fs.createReadStream(path.join(this.logDir, log));
         const outStream = fs.createWriteStream(
             path.join(this.logDir, `logger-${new Date().toISOString()}.log.gz`)
         );
-        inStream.pipe(brotli).pipe(outStream);
+        inStream.pipe(compressor).pipe(outStream);
         inStream.on("end", () => {
             fs.unlinkSync(path.join(this.logDir, log));
         });
