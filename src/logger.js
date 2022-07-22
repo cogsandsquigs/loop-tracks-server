@@ -64,7 +64,6 @@ export class Logger {
         const outStream = fs.createWriteStream(
             path.join(this.logDir, `logger-${new Date().toISOString()}.log.br`)
         );
-
         inStream.pipe(brotli).pipe(outStream);
         inStream.on("end", () => {
             fs.unlinkSync(path.join(this.logDir, log));
