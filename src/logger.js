@@ -24,7 +24,7 @@ export class Logger {
             this.scheduler.addLongIntervalJob(
                 new LongIntervalJob(
                     {
-                        seconds: this.archivalInterval,
+                        hours: this.archivalInterval,
                     },
                     new AsyncTask("Archive logs", this.archiveLogs.bind(this))
                 )
